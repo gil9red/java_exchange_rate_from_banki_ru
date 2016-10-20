@@ -47,6 +47,10 @@ if __name__ == '__main__':
 
         HttpURLConnection connection = null;
 
+        // Manual fill json data
+        long timestamp = new java.util.Date().getTime() / 1000;
+        String postData = String.format("{'date': %s, 'currency_id': %s}", timestamp, currencyId);
+
         // Почему-то в реализации java сервер часто не отдает данные и ругается 400 кодом через раз
         // поэтому долбим его запросами пока не отдаст
         int responseCode = 400;
@@ -57,10 +61,6 @@ if __name__ == '__main__':
             connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
             connection.setRequestProperty("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
 
-            // Manual fill json data
-            long timestamp = new java.util.Date().getTime() / 1000;
-            String postData = String.format("{'date': %s, 'currency_id': %s}", timestamp, currencyId);
-
             // Send post request
             connection.setDoOutput(true);
 
@@ -69,7 +69,9 @@ if __name__ == '__main__':
             }
 
             responseCode = connection.getResponseCode();
-            if (responseCode != 200 && responseCode != 400) {
+            if (responseCode == 200) {
+                break;
+            } else if (responseCode != 400) {
                 throw new Exception(String.format("Response code not ok: %s", responseCode));
             }
 
